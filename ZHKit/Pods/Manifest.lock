@@ -1,0 +1,20 @@
+PODS:
+  - ZHKit (1.0.2):
+    - ZHKit/Foundation (= 1.0.2)
+    - ZHKit/UIKit (= 1.0.2)
+  - ZHKit/Foundation (1.0.2)
+  - ZHKit/UIKit (1.0.2)
+
+DEPENDENCIES:
+  - ZHKit (from `../`)
+
+EXTERNAL SOURCES:
+  ZHKit:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  ZHKit: 6f9454173beeccd9740bf5dec36a7d7f6efb6dd8
+
+PODFILE CHECKSUM: 96cf2bddb5501608f41300f30c6c548c90f88c0f
+
+COCOAPODS: 1.5.3
