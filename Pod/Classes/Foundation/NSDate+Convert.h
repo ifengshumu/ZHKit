@@ -54,43 +54,52 @@ typedef NS_ENUM(NSUInteger, DateConvertStyle) {
 /**
  时间戳转NSString，根据枚举
  */
-+ (NSString *)stringFromTimestamp:(long long)timestamp withStyle:(DateConvertStyle)style;
++ (NSString *)stringFromTimestamp:(double)timestamp withStyle:(DateConvertStyle)style;
 
 /**
  时间戳转NSString，自定义转换时间格式
  */
-+ (NSString *)stringFromTimestamp:(long long)timestamp withFormat:(NSString *)format;
++ (NSString *)stringFromTimestamp:(double)timestamp withFormat:(NSString *)format;
 
 /**
  时间戳转NSDate，根据枚举
  */
-+ (NSDate *)dateFromTimestamp:(long long)timestamp withStyle:(DateConvertStyle)style;
++ (NSDate *)dateFromTimestamp:(double)timestamp withStyle:(DateConvertStyle)style;
 
 /**
  时间戳转NSDate，自定义转换时间格式
  */
-+ (NSDate *)dateFromTimestamp:(long long)timestamp withFormat:(NSString *)format;
++ (NSDate *)dateFromTimestamp:(double)timestamp withFormat:(NSString *)format;
 
 #pragma mark - NSDate和NSString转时间戳
 /**
  NSString转时间戳，根据枚举
  */
-+ (long long)timestampFromString:(NSString *)string withStyle:(DateConvertStyle)style;
++ (double)timestampFromString:(NSString *)string withStyle:(DateConvertStyle)style;
 
 /**
  NSString转时间戳，自定义转换时间格式
  */
-+ (long long)timestampFromString:(NSString *)string withFormat:(NSString *)format;
++ (double)timestampFromString:(NSString *)string withFormat:(NSString *)format;
 
 
 /**
  NSDate转时间戳，根据枚举
  */
-- (long long)timestampFromDate:(NSDate *)date withStyle:(DateConvertStyle)style;
+- (double)timestampFromDate:(NSDate *)date withStyle:(DateConvertStyle)style;
 
 /**
  NSDate转时间戳，自定义转换时间格式
  */
-- (long long)timestampFromDate:(NSDate *)date withFormat:(NSString *)format;
+- (double)timestampFromDate:(NSDate *)date withFormat:(NSString *)format;
 
+/**
+ 根据规则和现在时间比较
+*/
++ (NSString *)compareNowWithTimestamp:(double)timestamp;
+
+/**
+ 根据规则和现在时间比较
+*/
++ (NSString *)compareNowWithDate:(NSDate *)date;
 @end

@@ -84,52 +84,92 @@
 
 #pragma mark - 时间戳转NSDate和NSString
 
-+ (NSString *)stringFromTimestamp:(long long)timestamp withStyle:(DateConvertStyle)style {
++ (NSString *)stringFromTimestamp:(double)timestamp withStyle:(DateConvertStyle)style {
     if (timestamp == 0) {
-        return nil;
+        return @"";
     }
-    NSDate *date = [NSDate dateWithTimeIntervalSince1970:timestamp/1000];
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:timestamp];
     return [NSDate stringFromDate:date withStyle:style];
 }
 
-+ (NSString *)stringFromTimestamp:(long long)timestamp withFormat:(NSString *)format {
++ (NSString *)stringFromTimestamp:(double)timestamp withFormat:(NSString *)format {
     if (timestamp == 0) {
-        return nil;
+        return @"";
     }
-    NSDate *date = [NSDate dateWithTimeIntervalSince1970:timestamp/1000];
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:timestamp];
     return [NSDate stringFromDate:date withFormat:format];
 }
 
-+ (NSDate *)dateFromTimestamp:(long long)timestamp withStyle:(DateConvertStyle)style {
++ (NSDate *)dateFromTimestamp:(double)timestamp withStyle:(DateConvertStyle)style {
     NSString *string = [NSDate stringFromTimestamp:timestamp withStyle:style];
     return [NSDate dateFromString:string withStyle:style];
 }
 
-+ (NSDate *)dateFromTimestamp:(long long)timestamp withFormat:(NSString *)format {
++ (NSDate *)dateFromTimestamp:(double)timestamp withFormat:(NSString *)format {
     NSString *string = [NSDate stringFromTimestamp:timestamp withFormat:format];
     return [NSDate dateFromString:string withFormat:format];
 }
 
 #pragma mark - NSDate和NSString转时间戳
 
-+ (long long)timestampFromString:(NSString *)string withStyle:(DateConvertStyle)style {
++ (double)timestampFromString:(NSString *)string withStyle:(DateConvertStyle)style {
     NSDate *date = [NSDate dateFromString:string withStyle:style];
-    return [date timeIntervalSince1970]*1000;
+    return [date timeIntervalSince1970];
 }
 
-+ (long long)timestampFromString:(NSString *)string withFormat:(NSString *)format {
++ (double)timestampFromString:(NSString *)string withFormat:(NSString *)format {
     NSDate *date = [NSDate dateFromString:string withFormat:format];
-    return [date timeIntervalSince1970]*1000;
+    return [date timeIntervalSince1970];
 }
 
-- (long long)timestampFromDate:(NSDate *)date withStyle:(DateConvertStyle)style {
+- (double)timestampFromDate:(NSDate *)date withStyle:(DateConvertStyle)style {
     NSString *string = [NSDate stringFromDate:date withStyle:style];
     return [NSDate timestampFromString:string withStyle:style];
 }
 
-- (long long)timestampFromDate:(NSDate *)date withFormat:(NSString *)format {
+- (double)timestampFromDate:(NSDate *)date withFormat:(NSString *)format {
     NSString *string = [NSDate stringFromDate:date withFormat:format];
     return [NSDate timestampFromString:string withFormat:format];
 }
+
++ (NSString *)compareNowWithTimestamp:(double)timestamp {
+    NSDate *date = [NSDate dateFromTimestamp:timestamp withStyle:DateConvertStyleDefaultHMS];
+    return [self compareNowWithDate:date];
+}
+
++ (NSString *)compareNowWithDate:(NSDate *)date {
+    NSString *check = nil;
+    NSDateComponents *dateComponents = [[NSCalendar currentCalendar] components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute fromDate:date];
+    NSDateComponents *nowComponents = [[NSCalendar currentCalendar] components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute fromDate:[NSDate date]];
+    //本年之前
+    if (nowComponents.year > dateComponents.year) {
+        check = [NSDate stringFromDate:date withStyle:DateConvertStyleChinese];
+    } else {
+        BOOL isToday = [[NSCalendar currentCalendar] isDateInToday:date]; //今天
+        BOOL isYesterday = [[NSCalendar currentCalendar] isDateInYesterday:date]; //昨天
+        if (isToday) {
+            NSInteger hour = nowComponents.hour - dateComponents.hour;
+            NSInteger minute = nowComponents.minute - dateComponents.minute;
+            if (hour == 0) {
+                //1小时内
+                if (minute < 10) {
+                    check = @"刚刚";
+                } else {
+                    check = [NSString stringWithFormat:@"%02ld分钟前", minute];
+                }
+            } else {
+                //超过一小时
+                check = [NSString stringWithFormat:@"%02ld:%02ld", dateComponents.hour, dateComponents.minute];
+            }
+        } else if (isYesterday) {
+            check = [NSString stringWithFormat:@"昨天%02ld:%02ld", dateComponents.hour, dateComponents.minute];
+        } else if (nowComponents.month > dateComponents.month || nowComponents.day - dateComponents.day > 1) {
+            //昨天之前
+            check = [NSDate stringFromDate:date withFormat:@"MM-dd HH:mm"];
+        }
+    }
+    return check;
+}
+
 
 @end
