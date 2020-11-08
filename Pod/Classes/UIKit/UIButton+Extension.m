@@ -6,15 +6,43 @@
 
 #import "UIButton+Extension.h"
 #import <objc/runtime.h>
-#import <UIButton+WebCache.h>
 
 @implementation UIButton (Extension)
 
 - (void)setUserInfo:(NSDictionary *)userInfo {
     objc_setAssociatedObject(self, @selector(userInfo), userInfo, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
+
 - (NSDictionary *)userInfo {
     return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setTouchAreaInsets:(UIEdgeInsets)touchAreaInsets {
+    NSValue *value = [NSValue valueWithUIEdgeInsets:touchAreaInsets];
+    objc_setAssociatedObject(self, @selector(touchAreaInsets), value, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+- (UIEdgeInsets)touchAreaInsets {
+    return [objc_getAssociatedObject(self, @selector(touchAreaInsets)) UIEdgeInsetsValue];
+}
+
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event {
+    CGRect bounds = self.bounds;
+    if (UIEdgeInsetsEqualToEdgeInsets(self.touchAreaInsets, UIEdgeInsetsZero)) {
+        //若原热区小于44x44，则放大热区，否则保持原大小不变
+        CGFloat widthDelta = MAX(44.0 - bounds.size.width, 0);
+        CGFloat heightDelta = MAX(44.0 - bounds.size.height, 0);
+        bounds = CGRectInset(bounds, -0.5 * widthDelta, -0.5 * heightDelta);
+        return CGRectContainsPoint(bounds, point);
+        
+    } else {
+        UIEdgeInsets touchAreaInsets = self.touchAreaInsets;
+        bounds = CGRectMake(bounds.origin.x - touchAreaInsets.left,
+                            bounds.origin.y - touchAreaInsets.top,
+                            bounds.size.width + touchAreaInsets.left + touchAreaInsets.right,
+                            bounds.size.height + touchAreaInsets.top + touchAreaInsets.bottom);
+        return CGRectContainsPoint(bounds, point);
+    }
+    
 }
 
 - (void)addTouchUpInsideEventUsingBlock:(void (^)(UIButton *))block {
@@ -74,15 +102,15 @@
 }
 
 - (void)setImageWithURLString:(NSString *)urlString forState:(UIControlState)state {
-    [self sd_setImageWithURL:[self getImageWithURLString:urlString] forState:state];
+    //[self sd_setImageWithURL:[self getImageWithURLString:urlString] forState:state];
 }
 
 - (void)setImageWithURLString:(NSString *)urlString forState:(UIControlState)state placehoderImageName:(NSString *)imageName {
-    [self sd_setImageWithURL:[self getImageWithURLString:urlString] forState:state placeholderImage:imageName.length?[UIImage imageNamed:imageName]:nil];
+    //[self sd_setImageWithURL:[self getImageWithURLString:urlString] forState:state placeholderImage:imageName.length?[UIImage imageNamed:imageName]:nil];
 }
 
 - (void)setBackgroundImageWithURL:(NSString *)urlString forState:(UIControlState)state {
-    [self sd_setBackgroundImageWithURL:[self getImageWithURLString:urlString] forState:state];
+    //[self sd_setBackgroundImageWithURL:[self getImageWithURLString:urlString] forState:state];
 }
 
 - (NSURL *)getImageWithURLString:(NSString *)urlString {
@@ -126,15 +154,5 @@
         timer = nil;
     }
 }
-
-- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event {
-    CGRect bounds = self.bounds;
-    //若原热区小于44x44，则放大热区，否则保持原大小不变
-    CGFloat widthDelta = MAX(44.0 - bounds.size.width, 0);
-    CGFloat heightDelta = MAX(44.0 - bounds.size.height, 0);
-    bounds = CGRectInset(bounds, -0.5 * widthDelta, -0.5 * heightDelta);
-    return CGRectContainsPoint(bounds, point);
-}
-
 
 @end

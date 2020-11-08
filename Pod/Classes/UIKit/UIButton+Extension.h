@@ -27,6 +27,12 @@ typedef NS_ENUM(NSUInteger, UIButtonImageAlignment) {
 @property (nonatomic, copy) NSDictionary *userInfo;
 
 /**
+ 设置按钮额外热区
+*/
+@property (nonatomic, assign) UIEdgeInsets touchAreaInsets;
+
+
+/**
  添加Block点击事件
  */
 - (void)addTouchUpInsideEventUsingBlock:(void(^)(UIButton *sender))block;

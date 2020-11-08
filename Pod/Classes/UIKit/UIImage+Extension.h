@@ -1,7 +1,9 @@
 //
 //  UIImage+Extension.h
+//  ZHKit
 //
-//  Created by 李志华 on 2020/4/13.
+//  Created by Lee on 2016/9/29.
+//  Copyright © 2016年 leezhihua. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -55,6 +57,41 @@ extern UIImage* UIImageNamed(NSString * name);
 @return 截图
 */
 + (UIImage *)snapshotView:(UIView *)view;
+
+
+/// 从图片中按指定的位置大小截取图片的一部分
+/// @param image 原始的图片
+/// @param rect 要截取的区域
++ (UIImage *)imageFromImage:(UIImage *)image inRect:(CGRect)rect;
+
+/// 添加文字水印到指定图片上
+/// @param text 添加的文字
+/// @param atts 文字属性
+/// @param img 要添加的图片
+/// @param rect 文字要添加的区域
++ (UIImage *)addWaterText:(NSString *)text
+               attributes:(NSDictionary*)atts
+                  toImage:(UIImage *)img
+                     rect:(CGRect)rect;
+
+/// 给图片添加图片水印
++ (UIImage *)addWaterImage:(UIImage *)waterImg
+                   toImage:(UIImage *)img
+                      rect:(CGRect)rect;
+
+
+/** 垂直翻转 */
+- (UIImage *)flipVertical;
+
+/** 水平翻转 */
+- (UIImage *)flipHorizontal;
+
+/** 将图片旋转degrees角度 */
+- (UIImage *)imageRotatedByDegrees:(CGFloat)degrees;
+
+/** 将图片旋转radians弧度 */
+- (UIImage *)imageRotatedByRadians:(CGFloat)radians;
+
 
 @end
 
