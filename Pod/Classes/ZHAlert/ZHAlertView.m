@@ -107,6 +107,7 @@ static NSInteger const ToastViewTag         = 246810;
 + (SCLAlertView *)creatAlertWithConfirmTitle:(NSString *)confirmTitle cancelTitle:(NSString *)cancelTitle confirmHandler:(void(^)(void))confirmHandler cancelHandler:(void(^)(void))cancelHandler {
     [self hideToastOrLoading];
     SCLAlertView *alert = [[SCLAlertView alloc] initWithNewWindowWidth:mScreenWidth-W(50)*2];
+    aler.cornerRadius = 18;
     alert.horizontalButtons = YES;
     alert.horizontalButtonEqualWidth = YES;
     alert.labelTitle.textColor = UIColorFromHEX(0x333333);

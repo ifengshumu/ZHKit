@@ -59,7 +59,6 @@
 @property (nonatomic) CGFloat windowWidth;
 @property (nonatomic) CGFloat titleHeight;
 @property (nonatomic) CGFloat subTitleHeight;
-@property (nonatomic) CGFloat subTitleY;
 
 @end
 
@@ -152,17 +151,17 @@ SCLTimerDisplay *buttonTimer;
 - (void)setupViewWindowWidth:(CGFloat)windowWidth
 {
     // Default values
-    kCircleBackgroundTopPosition = -15.0f;
-    kCircleHeight = 56.0f;
-    kCircleHeightBackground = 62.0f;
+    kCircleBackgroundTopPosition = -30.0f;
+    kCircleHeight = 60.0f;
+    kCircleHeightBackground = 60.0f;
     kActivityIndicatorHeight = 40.0f;
-    kTitleTop = 31.0f;
+    kTitleTop = 30.0f;
     self.titleHeight = 24.0f;
     self.subTitleY = 60.0f;
     self.subTitleHeight = 90.0f;
     self.circleIconHeight = 20.0f;
     self.windowWidth = windowWidth;
-    self.windowHeight = 178.0f;
+    self.windowHeight = 200.0f;
     self.shouldDismissOnTapOutside = NO;
     self.usingNewWindow = NO;
     self.canAddObservers = YES;
@@ -187,7 +186,9 @@ SCLTimerDisplay *buttonTimer;
     _contentView = [[UIView alloc] init];
     _circleView = [[UIView alloc] init];
     _circleViewBackground = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, kCircleHeightBackground, kCircleHeightBackground)];
+    _circleViewBackground.backgroundColor = [UIColor whiteColor];
     _circleIconImageView = [[UIImageView alloc] init];
+    _circleIconImageView.contentMode = UIViewContentModeScaleAspectFill;
     _backgroundView = [[UIImageView alloc] initWithFrame:[self mainScreenFrame]];
     _buttons = [[NSMutableArray alloc] init];
     _inputs = [[NSMutableArray alloc] init];
@@ -198,20 +199,7 @@ SCLTimerDisplay *buttonTimer;
     [self.view addSubview:_contentView];
     [self.view addSubview:_circleViewBackground];
     
-    // Circle View
-    CGFloat x = (kCircleHeightBackground - kCircleHeight) / 2;
-    _circleView.frame = CGRectMake(x, x, kCircleHeight, kCircleHeight);
-    _circleView.layer.cornerRadius = _circleView.frame.size.height / 2;
-    
     // Circle Background View
-    _circleViewBackground.backgroundColor = [UIColor whiteColor];
-    _circleViewBackground.layer.cornerRadius = _circleViewBackground.frame.size.height / 2;
-    x = (kCircleHeight - _circleIconHeight) / 2;
-    
-    // Circle Image View
-    _circleIconImageView.frame = CGRectMake(x, x, _circleIconHeight, _circleIconHeight);
-    _circleIconImageView.contentMode = UIViewContentModeScaleAspectFill;
-    
     [_circleViewBackground addSubview:_circleView];
     [_circleView addSubview:_circleIconImageView];
     
@@ -230,16 +218,14 @@ SCLTimerDisplay *buttonTimer;
     _viewText.allowsEditingTextAttributes = YES;
     _viewText.textAlignment = NSTextAlignmentCenter;
     _viewText.font = [UIFont fontWithName:_bodyTextFontFamily size:_bodyFontSize];
-    _viewText.frame = CGRectMake(12.0f, _subTitleY, _windowWidth - 24.0f, _subTitleHeight);
+    _viewText.frame = CGRectMake(12.0f, kTitleTop + _titleHeight, _windowWidth - 24.0f, _subTitleHeight);
     _viewText.textContainerInset = UIEdgeInsetsZero;
     _viewText.textContainer.lineFragmentPadding = 0;
     self.automaticallyAdjustsScrollViewInsets = NO;
     
     // Content View
     _contentView.backgroundColor = [UIColor whiteColor];
-    _contentView.layer.cornerRadius = 5.0f;
     _contentView.layer.masksToBounds = YES;
-//    _contentView.layer.borderWidth = 0.5f;
     [_contentView addSubview:_viewText];
     [_contentView addSubview:_labelTitle];
     
@@ -247,7 +233,6 @@ SCLTimerDisplay *buttonTimer;
     self.backgroundViewColor = [UIColor whiteColor];
     _labelTitle.textColor = UIColorFromHEX(0x4D4D4D); //Dark Grey
     _viewText.textColor = UIColorFromHEX(0x4D4D4D); //Dark Grey
-//    _contentView.layer.borderColor = UIColorFromHEX(0xCCCCCC).CGColor; //Light Grey
 }
 
 - (void)setupNewWindow {
@@ -283,56 +268,24 @@ SCLTimerDisplay *buttonTimer;
         _circleIconHeight = 70.0f;
         
         // Adjust coordinate variables for larger sized top circle
-        kCircleBackgroundTopPosition = -61.0f;
-        kCircleHeight = 106.0f;
-        kCircleHeightBackground = 122.0f;
-        
-        // Reposition inner circle appropriately
-        CGFloat x = (kCircleHeightBackground - kCircleHeight) / 2;
-        _circleView.frame = CGRectMake(x, x, kCircleHeight, kCircleHeight);
-        
-    } else {
-        kCircleBackgroundTopPosition = -(kCircleHeightBackground / 2);
+        kCircleBackgroundTopPosition = -70.0f;
+        kCircleHeight = 100.0f;
+        kCircleHeightBackground = 100.0f;
     }
-    if (_labelTitle.text == nil) {
-        kTitleTop = kCircleHeightBackground / 2;
-    }
-    
-    // Check if the rootViewController is modal, if so we need to get the modal size not the main screen size
-    if ([self isModal] && !_usingNewWindow) {
-        sz = _rootViewController.view.frame.size;
-    }
-    
-    // Set new main frame
-    CGRect r;
-    if (self.view.superview != nil) {
-        // View is showing, position at center of screen
-        r = CGRectMake((sz.width-_windowWidth)/2, (sz.height-_windowHeight)/2, _windowWidth, _windowHeight);
-    } else {
-        // View is not visible, position outside screen bounds
-        r = CGRectMake((sz.width-_windowWidth)/2, -_windowHeight, _windowWidth, _windowHeight);
-    }
-    self.view.frame = r;
-    // Set new background frame
-    CGRect newBackgroundFrame = self.backgroundView.frame;
-    newBackgroundFrame.size = sz;
-    self.backgroundView.frame = newBackgroundFrame;
-    
-    // Set frames
-    _contentView.frame = CGRectMake(0.0f, 0.0f, _windowWidth, _windowHeight);
     
     //top circle image
-    _circleViewBackground.frame = CGRectMake(_windowWidth / 2 - kCircleHeightBackground / 2, kCircleBackgroundTopPosition, kCircleHeightBackground, kCircleHeightBackground);
-    _circleViewBackground.layer.cornerRadius = _circleViewBackground.frame.size.height / 2;
-    _circleView.layer.cornerRadius = _circleView.frame.size.height / 2;
-    _circleIconImageView.frame = CGRectMake(kCircleHeight / 2 - _circleIconHeight / 2, kCircleHeight / 2 - _circleIconHeight / 2, _circleIconHeight, _circleIconHeight);
+    _circleViewBackground.layer.cornerRadius = kCircleHeightBackground / 2.0;
+    _circleViewBackground.frame = CGRectMake((_windowWidth - kCircleHeightBackground) / 2.0, kCircleBackgroundTopPosition, kCircleHeightBackground, kCircleHeightBackground);
+    _circleView.frame = CGRectMake(0, 0, kCircleHeight, kCircleHeight);
+    _circleIconImageView.frame = CGRectMake((kCircleHeight - _circleIconHeight) / 2.0, (kCircleHeight - _circleIconHeight) / 2.0, _circleIconHeight, _circleIconHeight);
+    
     //title label
     _labelTitle.frame = CGRectMake(12.0f, kTitleTop, _windowWidth - 24.0f, _titleHeight);
     
     CGFloat y = (_labelTitle.text == nil) ? kTitleTop : CGRectGetMaxY(_labelTitle.frame);
     // Text fields
     if (_viewText) {
-        y += 18.f;
+        y += 15.f;
         _viewText.frame = CGRectMake(21.0f, y, _windowWidth - 42.0f, _subTitleHeight);
         y += _subTitleHeight;
     }
@@ -340,7 +293,7 @@ SCLTimerDisplay *buttonTimer;
         y = 0.0f;
     }
 
-    if (_inputs.count) y += 16.0f;
+    if (_inputs.count) y += 15.0f;
     for (SCLTextView *textField in _inputs) {
         textField.frame = CGRectMake(12.0f, y, _windowWidth - 24.0f, 32);
         textField.layer.cornerRadius = 16.0f;
@@ -388,11 +341,31 @@ SCLTimerDisplay *buttonTimer;
     }
     
     // Adapt window height according to icon size
-    self.windowHeight = y + h;
-    CGRect rect = self.view.frame;
-    rect.size.height = _windowHeight;
-    self.view.frame = rect;
-    _contentView.frame = CGRectMake(_contentView.frame.origin.x, _contentView.frame.origin.y, _windowWidth, _windowHeight);
+    _windowHeight = y + h;
+    
+    // Check if the rootViewController is modal, if so we need to get the modal size not the main screen size
+    if ([self isModal] && !_usingNewWindow) {
+        sz = _rootViewController.view.frame.size;
+    }
+    
+    // Set new main frame
+    CGRect r;
+    if (self.view.superview != nil) {
+        // View is showing, position at center of screen
+        r = CGRectMake((sz.width-_windowWidth)/2, (sz.height-_windowHeight)/2, _windowWidth, _windowHeight);
+    } else {
+        // View is not visible, position outside screen bounds
+        r = CGRectMake((sz.width-_windowWidth)/2, -_windowHeight, _windowWidth, _windowHeight);
+    }
+    self.view.frame = r;
+    
+    // Set new background frame
+    CGRect newBackgroundFrame = self.backgroundView.frame;
+    newBackgroundFrame.size = sz;
+    self.backgroundView.frame = newBackgroundFrame;
+    
+    // Set frames
+    _contentView.frame = CGRectMake(0.0f, 0.0f, _windowWidth, _windowHeight);
     // Adjust corner radius, if a value has been passed
     _contentView.layer.cornerRadius = self.cornerRadius ? self.cornerRadius : 4.0f;
 }
@@ -890,7 +863,6 @@ SCLTimerDisplay *buttonTimer;
         case SCLAlertViewStyleCustom:
             viewColor = color;
             iconImage = image;
-            self.circleIconHeight *= 2.0f;
             break;
     }
     
@@ -910,22 +882,17 @@ SCLTimerDisplay *buttonTimer;
         CGSize size = [_labelTitle sizeThatFits:sz];
 
         CGFloat ht = ceilf(size.height);
+        self.titleHeight = ht;
         if (ht > _titleHeight) {
             self.windowHeight += (ht - _titleHeight);
-            self.titleHeight = ht;
-            self.subTitleY += 18;
         } else {
             self.windowHeight -= (_titleHeight - ht);
-            self.titleHeight = ht;
-            self.subTitleY += 18;
         }
     } else {
         // Title is nil, we can move the body message to center and remove it from superView
         self.windowHeight -= _labelTitle.frame.size.height;
         [_labelTitle removeFromSuperview];
         _labelTitle = nil;
-        
-        _subTitleY = kTitleTop;
     }
     
     // Subtitle
@@ -950,12 +917,11 @@ SCLTimerDisplay *buttonTimer;
         } else {
             ht = MIN(ht, 204);
         }
-        if (ht < _subTitleHeight) {
-            self.windowHeight -= (_subTitleHeight - ht);
-            self.subTitleHeight = ht;
-        } else {
+        self.subTitleHeight = ht;
+        if (ht > _subTitleHeight) {
             self.windowHeight += (ht - _subTitleHeight);
-            self.subTitleHeight = ht;
+        } else {
+            self.windowHeight -= (_subTitleHeight - ht);
         }
     } else {
         // Subtitle is nil, we can move the title to center and remove it from superView
